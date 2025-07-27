@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS Brand Strategy Roadmap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Cosmic Night -->
+    <!-- Application Structure Plan: The application uses a tabbed navigation structure to break the dense report into four logical, digestible sections: an Overview dashboard, Market Analysis, Strategy (Brand & Product), and a Funding Roadmap. This non-linear design allows users (founders, investors) to quickly access specific information without scrolling through a long document. Key interactions include interactive charts for KPIs and market growth, clickable diagrams for processes and product synergy, and toggles for comparing complex data like term sheet clauses. This structure was chosen to enhance usability, facilitate exploration, and make the strategic information more engaging and memorable than a static document. -->
+    <!-- Visualization & Content Choices: 
+        - Market Growth (CAGR): Report Info -> Goal: Show growth -> Viz: Bar Chart -> Interaction: Hover tooltips -> Justification: More impactful than text -> Library: Chart.js.
+        - Competitor Tables: Report Info -> Goal: Compare rivals -> Viz: Styled HTML Table -> Interaction: Hover highlight -> Justification: Clear, structured comparison -> Library/Method: HTML/CSS.
+        - Product Flywheel: Report Info -> Goal: Explain synergy -> Viz: CSS Diagram -> Interaction: Hover tooltips -> Justification: Visually explains a core concept without static images -> Library/Method: HTML/CSS.
+        - KPI Benchmarks: Report Info -> Goal: Clarify key metrics -> Viz: Gauge/Bar Charts -> Interaction: Hover tooltips -> Justification: Makes abstract targets tangible and visually appealing for investors -> Library: Chart.js.
+        - Company Registration: Report Info -> Goal: Simplify legal process -> Viz: Accordion Timeline -> Interaction: Click to expand -> Justification: Turns a dense list into an interactive, step-by-step guide -> Library/Method: HTML/JS.
+        - Term Sheet Clauses: Report Info -> Goal: Demystify legal terms -> Viz: Interactive Toggles -> Interaction: Click to switch views -> Justification: Actively engages user in understanding complex trade-offs -> Library/Method: HTML/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-active { border-color: #3b82f6; color: #3b82f6; background-color: #1f2937; }
+        .tab-inactive { border-color: transparent; color: #9ca3af; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 320px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .kpi-card { transition: all 0.3s ease; }
+        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2); }
+        .step-item .step-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+        .step-item.active .step-content { max-height: 500px; transition: max-height 0.7s ease-in; }
+        .term-toggle-bg { transition: background-color 0.3s ease; }
+        .term-toggle-dot { transition: transform 0.3s ease; }
+
+        #sparkle-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: sparkle-animation 5s infinite;
+            opacity: 0;
+        }
+
+        @keyframes sparkle-animation {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.2) translateY(-20px); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-300">
+    <div id="sparkle-background"></div>
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-100">Strategic SaaS Roadmap</h1>
+            <p class="mt-2 text-lg text-slate-400">Intelligent Creation, Verified.</p>
+        </header>
+
+        <div class="bg-slate-800 rounded-xl shadow-lg p-4 sm:p-6 border border-slate-700">
+            <nav class="border-b border-slate-700 mb-6">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="main-tabs">
+                    <li><button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-tab="overview">Overview</button></li>
+                    <li><button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-tab="market">Market Analysis</button></li>
+                    <li><button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-tab="strategy">Brand & Product Strategy</button></li>
+                    <li><button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-tab="gtm">Go-to-Market & KPIs</button></li>
+                    <li><button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-tab="funding">Funding Roadmap</button></li>
+                </ul>
+            </nav>
+
+            <div id="tab-content">
+                <section id="overview" class="content-section">
+                    <div class="p-2">
+                        <h2 class="text-2xl font-bold mb-4 text-slate-100">Executive Overview</h2>
+                        <p class="text-slate-400 mb-6">This interactive roadmap outlines the strategic plan for launching a multi-product SaaS brand. The core mission is to empower developers with an integrated suite of AI tools that accelerate the entire software development lifecycle, from understanding requirements to deploying verified code. This dashboard provides a comprehensive look at the market opportunity, brand strategy, growth plan, and funding requirements.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-slate-700 p-6 rounded-lg">
+                                <h3 class="font-bold text-lg text-slate-200">Brand Essence</h3>
+                                <p class="text-slate-400">Intelligent Creation, Verified.</p>
+                            </div>
+                            <div class="bg-slate-700 p-6 rounded-lg">
+                                <h3 class="font-bold text-lg text-slate-200">Brand Promise</h3>
+                                <p class="text-slate-400">Go from idea to deployed, reliable application faster than ever before.</p>
+                            </div>
+                            <div class="bg-slate-700 p-6 rounded-lg">
+                                <h3 class="font-bold text-lg text-slate-200">Vision</h3>
+                                <p class="text-slate-400">A world where the barrier between a great idea and a functional, reliable software application is virtually zero.</p>
+                            </div>
+                        </div>
+
+                        <h3 class="text-xl font-bold mb-4 text-slate-100">The Integrated Product Suite</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="border border-slate-700 p-6 rounded-lg text-center bg-slate-900/50">
+                                <div class="text-3xl mb-2">💻</div>
+                                <h4 class="font-bold text-lg text-slate-200">AI Code Compiler</h4>
+                                <p class="text-sm text-slate-400">Prioritizing code verification and reliability over simple generation to build trust.</p>
+                            </div>
+                            <div class="border border-slate-700 p-6 rounded-lg text-center bg-slate-900/50">
+                                <div class="text-3xl mb-2">🎨</div>
+                                <h4 class="font-bold text-lg text-slate-200">Website/App Builder</h4>
+                                <p class="text-sm text-slate-400">Unifying AI generation, no-code editing, and pro-code access for a seamless workflow.</p>
+                            </div>
+                            <div class="border border-slate-700 p-6 rounded-lg text-center bg-slate-900/50">
+                                <div class="text-3xl mb-2">📄</div>
+                                <h4 class="font-bold text-lg text-slate-200">PDF/Doc Summarizer</h4>
+                                <p class="text-sm text-slate-400">The "Developer's Summarizer" to transform docs into actionable insights and code.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="market" class="content-section">
+                     <div class="p-2">
+                        <h2 class="text-2xl font-bold mb-4 text-slate-100">Market & Opportunity Analysis</h2>
+                        <p class="text-slate-400 mb-6">This section analyzes the three distinct markets our SaaS suite will enter. The goal is to identify key competitors, understand market dynamics, and uncover the strategic opportunities that define our unique position. Click through the tabs below to explore each market segment.</p>
+                        
+                        <div class="mb-4 border-b border-slate-700">
+                            <ul class="flex flex-wrap -mb-px" id="market-sub-tabs">
+                                <li><a href="#" class="market-sub-tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-subtab="compiler">AI Code Compiler</a></li>
+                                <li><a href="#" class="market-sub-tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-subtab="builder">Website Builder</a></li>
+                                <li><a href="#" class="market-sub-tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-subtab="summarizer">Doc Summarizer</a></li>
+                            </ul>
+                        </div>
+
+                        <div id="compiler" class="market-sub-content">
+                            <h3 class="text-xl font-semibold mb-2 text-slate-200">Opportunity: The Shift from Generation to Verification</h3>
+                            <p class="text-slate-400 mb-4">The market is saturated with tools that generate code, but professional developers' biggest pain point is the unreliability and potential insecurity of that code. Our strategic advantage lies in **verifiable compilation**: guaranteeing that the AI-generated code is robust, secure, and correct. Our brand promise is not just more code, but code that works.</p>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left text-slate-400">
+                                    <thead class="text-xs text-slate-300 uppercase bg-slate-700">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">Tool</th>
+                                            <th scope="col" class="px-6 py-3">Differentiator</th>
+                                            <th scope="col" class="px-6 py-3">Target Audience</th>
+                                            <th scope="col" class="px-6 py-3">Pricing</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="bg-slate-800 border-b border-slate-700 hover:bg-slate-600">
+                                            <td class="px-6 py-4 font-medium text-slate-200">GitHub Copilot</td>
+                                            <td class="px-6 py-4">Deep IDE integration</td>
+                                            <td class="px-6 py-4">Individual developers</td>
+                                            <td class="px-6 py-4">Freemium, $10/mo</td>
+                                        </tr>
+                                        <tr class="bg-slate-800 border-b border-slate-700 hover:bg-slate-600">
+                                            <td class="px-6 py-4 font-medium text-slate-200">Tabnine</td>
+                                            <td class="px-6 py-4">Privacy & Enterprise focus</td>
+                                            <td class="px-6 py-4">Enterprise teams</td>
+                                            <td class="px-6 py-4">$9-$39/user/mo</td>
+                                        </tr>
+                                        <tr class="bg-slate-800 border-b border-slate-700 hover:bg-slate-600">
+                                            <td class="px-6 py-4 font-medium text-slate-200">Replit</td>
+                                            <td class="px-6 py-4">All-in-one cloud IDE</td>
+                                            <td class="px-6 py-4">Students, professionals</td>
+                                            <td class="px-6 py-4">Freemium, $20/mo+</td>
+                                        </tr>
+                                        <tr class="bg-blue-900/50 border-b border-blue-800">
+                                            <td class="px-6 py-4 font-bold text-blue-300">Your Product</td>
+                                            <td class="px-6 py-4 font-bold text-blue-300">Verifiable Compilation & Reliability</td>
+                                            <td class="px-6 py-4 font-bold text-blue-300">Professionals, Teams</td>
+                                            <td class="px-6 py-4 font-bold text-blue-300">Tiered Freemium</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div id="builder" class="market-sub-content hidden">
+                            <h3 class="text-xl font-semibold mb-2 text-slate-200">Opportunity: Converging AI, No-Code, and Pro-Code</h3>
+                            <p class="text-slate-400 mb-4">The future is a fluid workflow between AI generation, visual editing, and direct code manipulation. Our builder will be the first to truly unify this by integrating with our AI Code Compiler. Users can start with an AI prompt, refine visually, and then "eject" to access clean, verifiable code for ultimate control.</p>
+                             <div class="chart-container">
+                                <canvas id="marketGrowthChart"></canvas>
+                            </div>
+                        </div>
+                        <div id="summarizer" class="market-sub-content hidden">
+                            <h3 class="text-xl font-semibold mb-2 text-slate-200">Opportunity: Contextual Integration for High-Value Workflows</h3>
+                            <p class="text-slate-400 mb-4">Standalone summarizers are a commodity. Value comes from integrating summarization into a specific, high-value workflow. Our tool will be the **"Developer's Summarizer,"** designed to ingest technical docs, bug reports, or white papers and output structured briefs and ready-to-use code snippets directly into our other products. It's not a separate tool, but the "understanding" engine for our entire ecosystem.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-slate-700 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-slate-200">From API Documentation...</h4>
+                                    <p class="text-sm text-slate-400">...to a concise list of endpoints and authentication code snippets.</p>
+                                </div>
+                                <div class="bg-slate-700 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-slate-200">From a Bug Report...</h4>
+                                    <p class="text-sm text-slate-400">...to a structured brief with steps to reproduce for the dev team.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="strategy" class="content-section">
+                    <div class="p-2">
+                        <h2 class="text-2xl font-bold mb-4 text-slate-100">Brand & Product Strategy</h2>
+                        <p class="text-slate-400 mb-6">A cohesive strategy is essential for a multi-product brand. This section details our foundational brand narrative, the chosen brand architecture, and the integrated product and pricing model designed to create a powerful growth flywheel.</p>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-3 text-slate-200">Brand Architecture: Monolithic Model</h3>
+                                <p class="text-slate-400 mb-4">For an early-stage startup with a synergistic suite, a **Monolithic (Branded House)** model is the most effective choice. It concentrates marketing resources, builds credibility across all products simultaneously, and makes our core value proposition—seamless integration—immediately clear to the customer.</p>
+                                <div class="space-y-3">
+                                    <div class="p-4 rounded-lg bg-blue-900/30 border border-blue-800">
+                                        <h4 class="font-bold text-blue-300">✓ Monolithic (Recommended)</h4>
+                                        <p class="text-sm text-blue-400">High brand synergy and marketing efficiency. Perfect for our integrated suite.</p>
+                                    </div>
+                                    <div class="p-4 rounded-lg bg-slate-700 border border-slate-600">
+                                        <h4 class="font-bold text-slate-300">✗ House of Brands</h4>
+                                        <p class="text-sm text-slate-400">Inefficient and obscures product synergy. Too costly for a startup.</p>
+                                    </div>
+                                     <div class="p-4 rounded-lg bg-slate-700 border border-slate-600">
+                                        <h4 class="font-bold text-slate-300">✗ Endorsed Brands</h4>
+                                        <p class="text-sm text-slate-400">Overly complex for our current stage; dilutes the core integration message.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-3 text-slate-200">The Product Flywheel</h3>
+                                <p class="text-slate-400 mb-4">Our products are designed as a continuous loop, where each tool enhances the value of the others, creating a sticky and efficient ecosystem for developers.</p>
+                                <div class="relative p-8 border-2 border-dashed border-slate-600 rounded-xl space-y-4">
+                                    <div class="text-center">
+                                        <div class="p-3 bg-slate-700 border border-slate-600 rounded-lg shadow-sm"><strong>1. Input & Understanding</strong> (Docs)</div>
+                                        <div class="text-2xl text-slate-500">↓</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="p-3 bg-slate-700 border border-slate-600 rounded-lg shadow-sm"><strong>2. Transformation & Ideation</strong> (Generate Snippets)</div>
+                                        <div class="text-2xl text-slate-500">↓</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="p-3 bg-slate-700 border border-slate-600 rounded-lg shadow-sm"><strong>3. Refinement & Verification</strong> (Code)</div>
+                                        <div class="text-2xl text-slate-500">↓</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="p-3 bg-slate-700 border border-slate-600 rounded-lg shadow-sm"><strong>4. Creation & Integration</strong> (Build)</div>
+                                    </div>
+                                    <div class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 text-2xl text-slate-500 transform rotate-90">→</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="text-xl font-semibold mt-8 mb-3 text-slate-200">Pricing: Tiered Freemium (Product-Led Growth)</h3>
+                        <p class="text-slate-400 mb-4">Our pricing model is a strategic Go-to-Market motion. We attract a wide audience with a powerful free tool (the summarizer) and create a low-friction path to conversion as users experience the value of the integrated suite.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                            <div class="border-2 border-slate-700 p-6 rounded-lg bg-slate-900/50">
+                                <h4 class="font-bold text-lg text-slate-200">Free</h4>
+                                <p class="text-sm text-slate-500 mb-2">For individuals exploring</p>
+                                <p class="font-bold text-2xl text-slate-200">₹0</p>
+                                <ul class="text-sm text-slate-400 mt-4 space-y-2">
+                                    <li>✓ Metered access to `Docs`</li>
+                                    <li>✓ Community Support</li>
+                                </ul>
+                            </div>
+                            <div class="border-2 border-blue-500 p-6 rounded-lg relative bg-slate-800">
+                                <div class="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">PRO</div>
+                                <h4 class="font-bold text-lg text-blue-400">Developer</h4>
+                                <p class="text-sm text-slate-500 mb-2">For professionals</p>
+                                <p class="font-bold text-2xl text-slate-200">₹1,200<span class="font-normal text-base text-slate-400">/mo</span></p>
+                                <ul class="text-sm text-slate-400 mt-4 space-y-2">
+                                    <li>✓ Full access to `Code`</li>
+                                    <li>✓ Generous `Build` limits</li>
+                                    <li>✓ Priority Support</li>
+                                </ul>
+                            </div>
+                            <div class="border-2 border-slate-700 p-6 rounded-lg bg-slate-900/50">
+                                <h4 class="font-bold text-lg text-slate-200">Enterprise</h4>
+                                <p class="text-sm text-slate-500 mb-2">For teams & businesses</p>
+                                <p class="font-bold text-2xl text-slate-200">Custom</p>
+                                <ul class="text-sm text-slate-400 mt-4 space-y-2">
+                                    <li>✓ Per-user pricing</li>
+                                    <li>✓ On-premise deployment</li>
+                                    <li>✓ Advanced Security</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="gtm" class="content-section">
+                    <div class="p-2">
+                        <h2 class="text-2xl font-bold mb-4 text-slate-100">Go-to-Market & KPIs</h2>
+                        <p class="text-slate-400 mb-6">A successful launch requires a clear understanding of our customer, a focused acquisition strategy, and rigorous tracking of Key Performance Indicators (KPIs). This plan is rooted in a Product-Led Growth (PLG) motion, attracting users with value and building a strong community.</p>
+                        
+                        <h3 class="text-xl font-semibold mb-3 text-slate-200">Ideal Customer Profiles (ICPs)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="bg-slate-700 p-6 rounded-lg">
+                                <h4 class="font-bold text-slate-200">The Full-Stack Freelancer</h4>
+                                <p class="text-sm text-slate-400 mt-2"><strong>Pain Points:</strong> Juggling projects, time wasted on boilerplate and debugging AI code, profitability tied to efficiency.</p>
+                                <p class="text-sm text-slate-400 mt-1"><strong>Goals:</strong> Increase project velocity, deliver higher quality code, reduce friction.</p>
+                            </div>
+                            <div class="bg-slate-700 p-6 rounded-lg">
+                                <h4 class="font-bold text-slate-200">The Mid-Sized Co. Tech Lead</h4>
+                                <p class="text-sm text-slate-400 mt-2"><strong>Pain Points:</strong> Ensuring code quality and team consistency, security/IP concerns with cloud AI tools, managing technical debt.</p>
+                                <p class="text-sm text-slate-400 mt-1"><strong>Goals:</strong> Improve team productivity without compromising standards, find secure, integrated solutions.</p>
+                            </div>
+                        </div>
+
+                        <h3 class="text-xl font-semibold mb-3 text-slate-200">Investor-Ready KPI Dashboard</h3>
+                        <p class="text-slate-400 mb-6">Tracking the right metrics is non-negotiable for managing the business and communicating with investors. Below are our target benchmarks for key SaaS metrics that signal a healthy, scalable business model.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="kpi-card bg-slate-700 p-6 rounded-lg border border-slate-600">
+                                <h4 class="font-semibold text-slate-300">LTV to CAC Ratio</h4>
+                                <p class="text-3xl font-bold text-green-400 mt-2">3:1</p>
+                                <p class="text-sm text-slate-500">Target ratio of Lifetime Value to Customer Acquisition Cost.</p>
+                            </div>
+                             <div class="kpi-card bg-slate-700 p-6 rounded-lg border border-slate-600">
+                                <h4 class="font-semibold text-slate-300">Net Revenue Retention</h4>
+                                <p class="text-3xl font-bold text-green-400 mt-2">>100%</p>
+                                <p class="text-sm text-slate-500">Growth from existing customers outpacing churn.</p>
+                            </div>
+                             <div class="kpi-card bg-slate-700 p-6 rounded-lg border border-slate-600">
+                                <h4 class="font-semibold text-slate-300">Gross Margin</h4>
+                                <p class="text-3xl font-bold text-green-400 mt-2">>80%</p>
+                                <p class="text-sm text-slate-500">Profitability of core service delivery.</p>
+                            </div>
+                             <div class="kpi-card bg-slate-700 p-6 rounded-lg border border-slate-600">
+                                <h4 class="font-semibold text-slate-300">CAC Payback Period</h4>
+                                <p class="text-3xl font-bold text-orange-400 mt-2">&lt;12</p>
+                                <p class="text-sm text-slate-500">Months to recover the cost of acquiring a customer.</p>
+                            </div>
+                             <div class="kpi-card bg-slate-700 p-6 rounded-lg border border-slate-600">
+                                <h4 class="font-semibold text-slate-300">Annual Churn Rate</h4>
+                                <p class="text-3xl font-bold text-orange-400 mt-2">&lt;7%</p>
+                                <p class="text-sm text-slate-500">Target for customer retention among SMBs.</p>
+                            </div>
+                             <div class="kpi-card bg-slate-700 p-6 rounded-lg border border-slate-600">
+                                <h4 class="font-semibold text-slate-300">Free-to-Paid Conversion</h4>
+                                <p class="text-3xl font-bold text-blue-400 mt-2">2-5%</p>
+                                <p class="text-sm text-slate-500">Industry benchmark for PLG conversion rate.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="funding" class="content-section">
+                    <div class="p-2">
+                        <h2 class="text-2xl font-bold mb-4 text-slate-100">Funding Roadmap (India)</h2>
+                        <p class="text-slate-400 mb-6">This section provides a tactical guide to securing capital within the Indian startup ecosystem. It covers the essential pre-funding preparations, from legal incorporation to crafting a compelling investment narrative and navigating term sheet negotiations.</p>
+
+                        <h3 class="text-xl font-semibold mb-3 text-slate-200">Company Registration Process</h3>
+                        <div id="registration-steps" class="space-y-2">
+                            <div class="step-item border border-slate-700 rounded-lg bg-slate-900/50">
+                                <button class="step-header w-full text-left p-4 flex justify-between items-center">
+                                    <span class="font-semibold text-slate-200">Step 1: Obtain DSC & DIN</span>
+                                    <span class="arrow text-xl transform transition-transform text-slate-400">▼</span>
+                                </button>
+                                <div class="step-content px-4 pb-4 text-slate-400">
+                                    <p>Obtain a Digital Signature Certificate (DSC) for all directors and apply for a Director Identification Number (DIN). These are mandatory for electronic filings with the Ministry of Corporate Affairs (MCA).</p>
+                                </div>
+                            </div>
+                             <div class="step-item border border-slate-700 rounded-lg bg-slate-900/50">
+                                <button class="step-header w-full text-left p-4 flex justify-between items-center">
+                                    <span class="font-semibold text-slate-200">Step 2: Reserve Company Name</span>
+                                    <span class="arrow text-xl transform transition-transform text-slate-400">▼</span>
+                                </button>
+                                <div class="step-content px-4 pb-4 text-slate-400">
+                                    <p>Reserve a unique company name via the SPICe+ Part A form on the MCA portal. The name must not be identical or too similar to existing companies or trademarks.</p>
+                                </div>
+                            </div>
+                             <div class="step-item border border-slate-700 rounded-lg bg-slate-900/50">
+                                <button class="step-header w-full text-left p-4 flex justify-between items-center">
+                                    <span class="font-semibold text-slate-200">Step 3: File for Incorporation</span>
+                                    <span class="arrow text-xl transform transition-transform text-slate-400">▼</span>
+                                </button>
+                                <div class="step-content px-4 pb-4 text-slate-400">
+                                    <p>Draft the Memorandum of Association (MoA) and Articles of Association (AoA) and file the main application using the integrated SPICe+ (INC-32) form. This also handles PAN, TAN, and other mandatory registrations.</p>
+                                </div>
+                            </div>
+                             <div class="step-item border border-slate-700 rounded-lg bg-slate-900/50">
+                                <button class="step-header w-full text-left p-4 flex justify-between items-center">
+                                    <span class="font-semibold text-slate-200">Step 4: Receive Certificate & Open Bank Account</span>
+                                    <span class="arrow text-xl transform transition-transform text-slate-400">▼</span>
+                                </button>
+                                <div class="step-content px-4 pb-4 text-slate-400">
+                                    <p>Once verified, the Registrar of Companies (RoC) issues the Certificate of Incorporation. Use this document to open a business bank account in the company's name.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="text-xl font-semibold mt-8 mb-3 text-slate-200">Term Sheet Negotiation Simulator</h3>
+                        <p class="text-slate-400 mb-4">Understanding a term sheet is critical. Use the toggles below to see how key clauses change between founder-friendly and investor-friendly positions. This is a crucial area of negotiation that defines the long-term relationship.</p>
+                        
+                        <div id="term-sheet-simulator" class="space-y-4">
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const createSparkles = () => {
+            const sparkleContainer = document.getElementById('sparkle-background');
+            const sparkleCount = 50;
+            for (let i = 0; i < sparkleCount; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.top = `${Math.random() * 100}%`;
+                sparkle.style.left = `${Math.random() * 100}%`;
+                const size = Math.random() * 2 + 1;
+                sparkle.style.width = `${size}px`;
+                sparkle.style.height = `${size}px`;
+                sparkle.style.animationDelay = `${Math.random() * 5}s`;
+                sparkle.style.animationDuration = `${Math.random() * 3 + 4}s`;
+                sparkleContainer.appendChild(sparkle);
+            }
+        };
+        createSparkles();
+
+        const mainTabs = document.getElementById('main-tabs');
+        const contentSections = document.querySelectorAll('.content-section');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+
+        function switchTab(tabName) {
+            tabButtons.forEach(btn => {
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.add('tab-active');
+                    btn.classList.remove('tab-inactive');
+                } else {
+                    btn.classList.add('tab-inactive');
+                    btn.classList.remove('tab-active');
+                }
+            });
+
+            contentSections.forEach(section => {
+                if (section.id === tabName) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+        }
+
+        mainTabs.addEventListener('click', (e) => {
+            if (e.target.matches('.tab-btn')) {
+                switchTab(e.target.dataset.tab);
+            }
+        });
+        
+        switchTab('overview');
+
+        const marketSubTabs = document.getElementById('market-sub-tabs');
+        const marketSubContent = document.querySelectorAll('.market-sub-content');
+        const marketSubTabButtons = document.querySelectorAll('.market-sub-tab-btn');
+        
+        function switchMarketSubTab(subTabName) {
+            marketSubTabButtons.forEach(btn => {
+                if (btn.dataset.subtab === subTabName) {
+                    btn.classList.add('tab-active');
+                    btn.classList.remove('tab-inactive');
+                } else {
+                    btn.classList.add('tab-inactive');
+                    btn.classList.remove('tab-active');
+                }
+            });
+
+            marketSubContent.forEach(content => {
+                if (content.id === subTabName) {
+                    content.classList.remove('hidden');
+                } else {
+                    content.classList.add('hidden');
+                }
+            });
+        }
+        
+        marketSubTabs.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (e.target.matches('.market-sub-tab-btn')) {
+                switchMarketSubTab(e.target.dataset.subtab);
+            }
+        });
+
+        switchMarketSubTab('compiler');
+
+        const registrationSteps = document.getElementById('registration-steps');
+        registrationSteps.addEventListener('click', (e) => {
+            const header = e.target.closest('.step-header');
+            if (header) {
+                const item = header.parentElement;
+                item.classList.toggle('active');
+                const arrow = header.querySelector('.arrow');
+                arrow.classList.toggle('rotate-180');
+            }
+        });
+
+        const termSheetData = [
+            {
+                clause: 'Liquidation Preference',
+                founderFriendly: '<strong>1x, non-participating.</strong> The standard, fair approach. Investors get their money back first OR convert to share pro-rata with founders. They cannot do both.',
+                investorFriendly: '<strong>>1x and/or participating.</strong> Highly punitive. Investors get their money back (sometimes multiple times) AND also get their pro-rata share of remaining proceeds, severely impacting founder returns.'
+            },
+            {
+                clause: 'Founder Vesting',
+                founderFriendly: '<strong>Single-trigger acceleration.</strong> On a change of control (e.g., acquisition), all of the founder\'s unvested shares vest immediately. This protects the founder\'s equity in an exit.',
+                investorFriendly: '<strong>Double-trigger acceleration.</strong> Shares only accelerate if there is a change of control AND the founder is terminated without cause. Less protection for the founder.'
+            },
+            {
+                clause: 'Anti-Dilution',
+                founderFriendly: '<strong>Broad-based weighted average.</strong> Protects investors from "down rounds" (future funding at a lower valuation) in a way that is fair and causes less dilution to founders and employees.',
+                investorFriendly: '<strong>Full ratchet.</strong> The investor\'s share price is reset to the new, lower price, causing extreme and often catastrophic dilution to everyone else. Should be rejected.'
+            },
+            {
+                clause: 'Board Composition',
+                founderFriendly: '<strong>Founder control.</strong> A balanced 3-person board is common: 1 Founder, 1 Investor, 1 Independent Director. This ensures no single party has unilateral control.',
+                investorFriendly: '<strong>Investor control.</strong> The investor may ask for more board seats than their ownership percentage would suggest, giving them control over company decisions.'
+            }
+        ];
+
+        const simulatorContainer = document.getElementById('term-sheet-simulator');
+        termSheetData.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'border border-slate-700 rounded-lg p-4 bg-slate-900/50';
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-semibold text-slate-200">${item.clause}</h4>
+                    <div class="flex items-center space-x-2 text-sm">
+                        <span class="text-green-400 font-medium">Founder</span>
+                        <button id="toggle-${index}" class="relative inline-flex items-center h-6 rounded-full w-11 term-toggle-bg bg-green-500/50">
+                            <span class="sr-only">Toggle</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full term-toggle-dot translate-x-1"></span>
+                        </button>
+                        <span class="text-red-400 font-medium">Investor</span>
+                    </div>
+                </div>
+                <p id="desc-${index}" class="text-sm text-slate-400">${item.founderFriendly}</p>
+            `;
+            simulatorContainer.appendChild(div);
+
+            const toggle = document.getElementById(`toggle-${index}`);
+            const desc = document.getElementById(`desc-${index}`);
+            const dot = toggle.querySelector('.term-toggle-dot');
+            let isFounderFriendly = true;
+
+            toggle.addEventListener('click', () => {
+                isFounderFriendly = !isFounderFriendly;
+                if (isFounderFriendly) {
+                    desc.innerHTML = item.founderFriendly;
+                    toggle.classList.remove('bg-red-500/50');
+                    toggle.classList.add('bg-green-500/50');
+                    dot.classList.remove('translate-x-6');
+                    dot.classList.add('translate-x-1');
+                } else {
+                    desc.innerHTML = item.investorFriendly;
+                    toggle.classList.remove('bg-green-500/50');
+                    toggle.classList.add('bg-red-500/50');
+                    dot.classList.remove('translate-x-1');
+                    dot.classList.add('translate-x-6');
+                }
+            });
+        });
+
+        const marketGrowthCtx = document.getElementById('marketGrowthChart');
+        if (marketGrowthCtx) {
+            new Chart(marketGrowthCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['2025 (Est.)', '2030 (Proj.)'],
+                    datasets: [{
+                        label: 'Market Size (USD Billion)',
+                        data: [3.06, 6.68],
+                        backgroundColor: ['rgba(59, 130, 246, 0.5)', 'rgba(29, 78, 216, 0.7)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(29, 78, 216, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Website Builder Market Growth (CAGR 16.9%)', font: { size: 16 }, color: '#cbd5e1' },
+                        legend: { display: false, labels: { color: '#cbd5e1' } }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'USD Billions', color: '#9ca3af' },
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
